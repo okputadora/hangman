@@ -18354,13 +18354,17 @@ var Board = function (_Component) {
         ),
         _react2.default.createElement(
           'div',
-          null,
-          _react2.default.createElement(_Answer2.default, null)
-        ),
-        _react2.default.createElement(
-          'div',
-          null,
-          _react2.default.createElement(_Alphabet2.default, null)
+          { className: 'container' },
+          _react2.default.createElement(
+            'div',
+            { className: 'row' },
+            _react2.default.createElement(
+              'div',
+              null,
+              _react2.default.createElement(_Answer2.default, null)
+            ),
+            _react2.default.createElement(_Alphabet2.default, null)
+          )
         )
       );
     }
@@ -18438,6 +18442,14 @@ var _react = __webpack_require__(4);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _styles = __webpack_require__(32);
+
+var _styles2 = _interopRequireDefault(_styles);
+
+var _Letter = __webpack_require__(31);
+
+var _Letter2 = _interopRequireDefault(_Letter);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -18452,16 +18464,42 @@ var Answer = function (_Component) {
   function Answer() {
     _classCallCheck(this, Answer);
 
-    return _possibleConstructorReturn(this, (Answer.__proto__ || Object.getPrototypeOf(Answer)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (Answer.__proto__ || Object.getPrototypeOf(Answer)).call(this));
+
+    _this.state = {
+      answer: []
+    };
+    return _this;
   }
+  // when the component renders pick a random anser
+
 
   _createClass(Answer, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var answers = ["hello", "world", "goodbye"];
+      var answerArray = answers[Math.floor(Math.random() * answers.length)].split("");
+      var updatedAnswer = Object.assign([], answerArray);
+      console.log(updatedAnswer);
+      this.setState({
+        answer: updatedAnswer
+      });
+    }
+  }, {
     key: 'render',
     value: function render() {
+      var answerItems = this.state.answer.map(function (element, i) {
+        console.log('element ' + element);
+        return _react2.default.createElement(
+          'div',
+          { key: i },
+          _react2.default.createElement(_Letter2.default, { letter: element })
+        );
+      });
       return _react2.default.createElement(
         'div',
-        null,
-        'Answer'
+        { style: _styles2.default.alphabet },
+        answerItems
       );
     }
   }]);
@@ -18492,6 +18530,10 @@ var _Letter = __webpack_require__(31);
 
 var _Letter2 = _interopRequireDefault(_Letter);
 
+var _styles = __webpack_require__(32);
+
+var _styles2 = _interopRequireDefault(_styles);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -18500,22 +18542,43 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var alphabetStyle = _styles2.default.alphabet;
+
 var Alphabet = function (_Component) {
   _inherits(Alphabet, _Component);
 
   function Alphabet() {
     _classCallCheck(this, Alphabet);
 
-    return _possibleConstructorReturn(this, (Alphabet.__proto__ || Object.getPrototypeOf(Alphabet)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (Alphabet.__proto__ || Object.getPrototypeOf(Alphabet)).call(this));
+
+    _this.state = {
+      list: [{ value: 'A', guessed: false }, { value: 'B', guessed: false }, { value: 'C', guessed: false }, { value: 'D', guessed: false }, { value: 'E', guessed: false }, { value: 'F', guessed: false }, { value: 'G', guessed: false }, { value: 'H', guessed: false }, { value: 'I', guessed: false }, { value: 'J', guessed: false }, { value: 'K', guessed: false }, { value: 'L', guessed: false }, { value: 'M', guessed: false }, { value: 'N', guessed: false }, { value: 'O', guessed: false }, { value: 'P', guessed: false }, { value: 'Q', guessed: false }, { value: 'R', guessed: false }, { value: 'T', guessed: false }, { value: 'S', guessed: false }, { value: 'U', guessed: false }, { value: 'V', guessed: false }, { value: 'W', guessed: false }, { value: 'X', guessed: false }, { value: 'Y', guessed: false }, { value: 'Z', guessed: false }]
+    };
+    return _this;
   }
 
   _createClass(Alphabet, [{
+    key: 'makeAGuess',
+    value: function makeAGuess() {
+      console.log("made a guess");
+    }
+  }, {
     key: 'render',
     value: function render() {
+      var _this2 = this;
+
+      var alphabetList = this.state.list.map(function (letter, i) {
+        return _react2.default.createElement(
+          'div',
+          { onClick: _this2.makeAGuess.bind(_this2), key: i },
+          _react2.default.createElement(_Letter2.default, { letter: letter })
+        );
+      });
       return _react2.default.createElement(
         'div',
-        null,
-        _react2.default.createElement(_Letter2.default, null)
+        { style: alphabetStyle },
+        alphabetList
       );
     }
   }]);
@@ -18542,6 +18605,10 @@ var _react = __webpack_require__(4);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _styles = __webpack_require__(32);
+
+var _styles2 = _interopRequireDefault(_styles);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -18549,6 +18616,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var letterStyle = _styles2.default.letter;
 
 var Letter = function (_Component) {
   _inherits(Letter, _Component);
@@ -18564,8 +18633,8 @@ var Letter = function (_Component) {
     value: function render() {
       return _react2.default.createElement(
         'div',
-        null,
-        'A'
+        { style: letterStyle },
+        this.props.letter.value
       );
     }
   }]);
@@ -18574,6 +18643,31 @@ var Letter = function (_Component) {
 }(_react.Component);
 
 exports.default = Letter;
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = {
+  letter: {
+    padding: 5,
+    margin: 5,
+    width: 25,
+    textAlign: 'center',
+    border: '1px solid black',
+    cursor: 'pointer'
+  },
+  alphabet: {
+    display: 'flex',
+    flexFlow: 'wrap'
+  }
+};
 
 /***/ })
 /******/ ]);

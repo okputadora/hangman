@@ -8,8 +8,13 @@ class Board extends Component{
     return (
       <div>
         <div><Picture /></div>
-        <div><Answer /></div>
-        <div><Alphabet /></div>
+
+        <div className="container">
+        <div className="row">
+          <div><Answer /></div>
+          <Alphabet />
+        </div>
+        </div>
       </div>
     )
   }
