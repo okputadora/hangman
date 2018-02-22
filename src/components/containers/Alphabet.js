@@ -10,7 +10,7 @@ class Alphabet extends Component {
       return <Letter
         key = {index}
         value ={this.props.squares[index]}
-        onClick ={() => this.props.onClick(element)}
+        onClick ={() => this.props.onClick(index)}
       />
     })
     return (

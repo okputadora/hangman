@@ -18370,6 +18370,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(1);
@@ -18406,18 +18408,44 @@ var Board = function (_Component) {
 
     var answers = ["hello", "world", "goodbye"];
     var answerArray = answers[Math.floor(Math.random() * answers.length)].split("");
+    console.log("ANSWER ARRAY: " + answerArray);
     _this.state = {
       unGuessed: "abcdefghijklmnopqrstuvwxyz".split(""),
       guessed: [],
-      answer: answerArray
+      answer: answerArray,
+      displayedAnswer: Array(answerArray.length).fill("_")
     };
     return _this;
   }
 
   _createClass(Board, [{
     key: 'handleGuess',
-    value: function handleGuess(element) {
-      console.log(element);
+    value: function handleGuess(i) {
+      console.log(i);
+      var unGuessed = this.state.unGuessed;
+      var guess = unGuessed.splice(i, 1);
+      var guessed = this.state.guessed;
+      var displayedAnswer = this.state.displayedAnswer;
+      console.log('answer: ' + _typeof(this.state.answer));
+      // check if this letter is in the answer
+      if (this.state.answer.includes(guess[0])) {
+        // find all of the indexes of this guess in the answer
+        var indexes = getAllIndexes(this.state.answer, guess[0]);
+        console.log(indexes);
+        // loop through those indexes and add the guess the corresponding
+        // index of the displayed answer
+        indexes.forEach(function (element) {
+          return displayedAnswer[element] = guess[0];
+        });
+      } else {
+        guessed.push(guess);
+      }
+      this.setState({
+        unGuessed: unGuessed,
+        guessed: guessed,
+        answer: this.state.answer,
+        displayedAnswer: displayedAnswer
+      });
     }
   }, {
     key: 'render',
@@ -18430,14 +18458,19 @@ var Board = function (_Component) {
         _react2.default.createElement(
           'div',
           null,
-          this.state.unGuessed[0]
+          this.state.displayedAnswer
         ),
         _react2.default.createElement(_Alphabet2.default, {
           squares: this.state.unGuessed,
-          onClick: function onClick(element) {
-            return _this2.handleGuess(element);
+          onClick: function onClick(i) {
+            return _this2.handleGuess(i);
           }
-        })
+        }),
+        _react2.default.createElement(
+          'div',
+          null,
+          this.state.guessed
+        )
       );
     }
   }]);
@@ -18445,6 +18478,17 @@ var Board = function (_Component) {
   return Board;
 }(_react.Component);
 
+function getAllIndexes(arr, val) {
+  var indexes = [];
+  for (var i = 0; i < arr.length; i++) {
+    console.log('arr[i] ' + arr[i] + ' val ' + val);
+    if (arr[i] === val) {
+      console.log("pushing to indexes");
+      indexes.push(i);
+    }
+  }
+  return indexes;
+}
 exports.default = Board;
 
 /***/ }),
@@ -18641,7 +18685,7 @@ var Alphabet = function (_Component) {
           key: index,
           value: _this2.props.squares[index],
           onClick: function onClick() {
-            return _this2.props.onClick(element);
+            return _this2.props.onClick(index);
           }
         });
       });
