@@ -1,4 +1,11 @@
 export default {
+  universal: {
+    flexContainer: {
+      display: 'flex',
+      justifyContent:'center',
+      flexFlow: 'wrap'
+    }
+  },
   letter: {
     padding: 5,
     margin: 5,
