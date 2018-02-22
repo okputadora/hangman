@@ -584,7 +584,8 @@ exports.default = {
     width: 25,
     textAlign: 'center',
     border: '1px solid black',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    boxShadow: '1px 1px 1px 1px #f9f9f9'
   },
   alphabet: {
     display: 'flex',
@@ -18370,8 +18371,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(1);
@@ -18382,9 +18381,9 @@ var _Picture = __webpack_require__(30);
 
 var _Picture2 = _interopRequireDefault(_Picture);
 
-var _Answer = __webpack_require__(31);
+var _LetterCollection = __webpack_require__(33);
 
-var _Answer2 = _interopRequireDefault(_Answer);
+var _LetterCollection2 = _interopRequireDefault(_LetterCollection);
 
 var _Alphabet = __webpack_require__(32);
 
@@ -18406,14 +18405,16 @@ var Board = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (Board.__proto__ || Object.getPrototypeOf(Board)).call(this, props));
 
-    var answers = ["hello", "world", "goodbye"];
+    var answers = ["hello", "world"];
     var answerArray = answers[Math.floor(Math.random() * answers.length)].split("");
-    console.log("ANSWER ARRAY: " + answerArray);
+    console.log(answerArray.toString());
     _this.state = {
       unGuessed: "abcdefghijklmnopqrstuvwxyz".split(""),
       guessed: [],
       answer: answerArray,
-      displayedAnswer: Array(answerArray.length).fill("_")
+      displayedAnswer: Array(answerArray.length).fill("_"),
+      numGuesses: 6,
+      status: 'You have 6 guesses'
     };
     return _this;
   }
@@ -18421,30 +18422,46 @@ var Board = function (_Component) {
   _createClass(Board, [{
     key: 'handleGuess',
     value: function handleGuess(i) {
-      console.log(i);
       var unGuessed = this.state.unGuessed;
       var guess = unGuessed.splice(i, 1);
       var guessed = this.state.guessed;
       var displayedAnswer = this.state.displayedAnswer;
-      console.log('answer: ' + _typeof(this.state.answer));
+      var numGuesses = this.state.numGuesses;
+      var status = this.state.status;
+      // if they;ve already won ignore their click
+      if (displayedAnswer.indexOf("_") == -1 || numGuesses == 0) {
+        return;
+      }
       // check if this letter is in the answer
       if (this.state.answer.includes(guess[0])) {
         // find all of the indexes of this guess in the answer
         var indexes = getAllIndexes(this.state.answer, guess[0]);
-        console.log(indexes);
         // loop through those indexes and add the guess the corresponding
         // index of the displayed answer
         indexes.forEach(function (element) {
           return displayedAnswer[element] = guess[0];
         });
+        // check for a winner
+        if (displayedAnswer.indexOf("_") == -1) {
+          status = "You've won!";
+        }
       } else {
         guessed.push(guess);
+        numGuesses--;
+        if (numGuesses == 0) {
+          status = "You've lost";
+        } else if (numGuesses == 1) {
+          status = "you have 1 guess left";
+        } else {
+          status = "you have " + numGuesses + " guesses left";
+        }
       }
       this.setState({
         unGuessed: unGuessed,
         guessed: guessed,
-        answer: this.state.answer,
-        displayedAnswer: displayedAnswer
+        displayedAnswer: displayedAnswer,
+        numGuesses: numGuesses,
+        status: status
       });
     }
   }, {
@@ -18454,22 +18471,57 @@ var Board = function (_Component) {
 
       return _react2.default.createElement(
         'div',
-        null,
+        { className: 'container' },
         _react2.default.createElement(
-          'div',
+          'h1',
           null,
-          this.state.displayedAnswer
+          'Hangman w/ React'
         ),
-        _react2.default.createElement(_Alphabet2.default, {
-          squares: this.state.unGuessed,
-          onClick: function onClick(i) {
-            return _this2.handleGuess(i);
-          }
-        }),
+        _react2.default.createElement(
+          'p',
+          null,
+          'I\'ve already picked a word ... Just start guessing'
+        ),
+        _react2.default.createElement(
+          'p',
+          null,
+          this.state.status
+        ),
         _react2.default.createElement(
           'div',
+          { className: 'row' },
+          _react2.default.createElement(
+            'h3',
+            { className: 'text-center' },
+            'Answer'
+          ),
+          _react2.default.createElement(_LetterCollection2.default, {
+            squares: this.state.displayedAnswer
+          }),
+          _react2.default.createElement(
+            'h3',
+            { className: 'text-center' },
+            'Remaining letters'
+          ),
+          _react2.default.createElement(_Alphabet2.default, {
+            squares: this.state.unGuessed,
+            onClick: function onClick(i) {
+              return _this2.handleGuess(i);
+            }
+          }),
+          _react2.default.createElement(
+            'h3',
+            { className: 'text-center' },
+            'Letters guessed'
+          ),
+          _react2.default.createElement(_LetterCollection2.default, {
+            squares: this.state.guessed
+          })
+        ),
+        _react2.default.createElement(
+          'p',
           null,
-          this.state.guessed
+          'open the console to reveal the answer'
         )
       );
     }
@@ -18481,9 +18533,7 @@ var Board = function (_Component) {
 function getAllIndexes(arr, val) {
   var indexes = [];
   for (var i = 0; i < arr.length; i++) {
-    console.log('arr[i] ' + arr[i] + ' val ' + val);
     if (arr[i] === val) {
-      console.log("pushing to indexes");
       indexes.push(i);
     }
   }
@@ -18542,95 +18592,7 @@ var Picture = function (_Component) {
 exports.default = Picture;
 
 /***/ }),
-/* 31 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(1);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _styles = __webpack_require__(7);
-
-var _styles2 = _interopRequireDefault(_styles);
-
-var _Letter = __webpack_require__(15);
-
-var _Letter2 = _interopRequireDefault(_Letter);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var universalStyle = _styles2.default.universal;
-
-var Answer = function (_Component) {
-  _inherits(Answer, _Component);
-
-  function Answer() {
-    _classCallCheck(this, Answer);
-
-    var _this = _possibleConstructorReturn(this, (Answer.__proto__ || Object.getPrototypeOf(Answer)).call(this));
-
-    _this.state = {
-      list: []
-    };
-    return _this;
-  }
-  // when the component renders pick a random anser
-
-
-  _createClass(Answer, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var answers = ["hello", "world", "goodbye"];
-      var answerArray = answers[Math.floor(Math.random() * answers.length)].split("");
-      var updatedList = Object.assign([], this.state.list);
-      answerArray.forEach(function (element, i) {
-        updatedList.push({ 'value': element, 'guessed': false });
-      });
-      console.log(updatedList);
-      this.setState({
-        list: updatedList
-      });
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var answerItems = this.state.list.map(function (element, i) {
-        console.log('element ' + element);
-        return _react2.default.createElement(
-          'div',
-          { key: i },
-          _react2.default.createElement(_Letter2.default, { letter: element })
-        );
-      });
-      return _react2.default.createElement(
-        'div',
-        { style: universalStyle.flexContainer },
-        answerItems
-      );
-    }
-  }]);
-
-  return Answer;
-}(_react.Component);
-
-exports.default = Answer;
-
-/***/ }),
+/* 31 */,
 /* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18688,6 +18650,8 @@ var Alphabet = function (_Component) {
             return _this2.props.onClick(index);
           }
         });
+        // ^^ onClick ={(...  is the only line that's different from the Word class
+        // I wonder if I could somehow put that prop in an if statmente
       });
       return _react2.default.createElement(
         'div',
@@ -18701,6 +18665,74 @@ var Alphabet = function (_Component) {
 }(_react.Component);
 
 exports.default = Alphabet;
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _styles = __webpack_require__(7);
+
+var _styles2 = _interopRequireDefault(_styles);
+
+var _Letter = __webpack_require__(15);
+
+var _Letter2 = _interopRequireDefault(_Letter);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var universalStyle = _styles2.default.universal;
+
+var LetterCollection = function (_Component) {
+  _inherits(LetterCollection, _Component);
+
+  function LetterCollection() {
+    _classCallCheck(this, LetterCollection);
+
+    return _possibleConstructorReturn(this, (LetterCollection.__proto__ || Object.getPrototypeOf(LetterCollection)).apply(this, arguments));
+  }
+
+  _createClass(LetterCollection, [{
+    key: 'render',
+    value: function render() {
+      var _this2 = this;
+
+      var letters = this.props.squares.map(function (element, index) {
+        return _react2.default.createElement(_Letter2.default, {
+          key: index,
+          value: _this2.props.squares[index]
+        });
+      });
+      return _react2.default.createElement(
+        'div',
+        { style: universalStyle.flexContainer },
+        letters
+      );
+    }
+  }]);
+
+  return LetterCollection;
+}(_react.Component);
+
+exports.default = LetterCollection;
 
 /***/ })
 /******/ ]);

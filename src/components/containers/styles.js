@@ -12,7 +12,8 @@ export default {
     width: 25,
     textAlign: 'center',
     border: '1px solid black',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    boxShadow: '1px 1px 1px 1px #f9f9f9'
   },
   alphabet: {
     display: 'flex',
